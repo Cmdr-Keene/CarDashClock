@@ -25,8 +25,8 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
     private val updateRunnable = object : Runnable {
         override fun run() {
             render()
-            // Update at ~30 FPS (32ms) for a smooth "sweep" second hand
-            handler.postDelayed(this, 32)
+            // Update every 1000ms to save battery life
+            handler.postDelayed(this, 1000)
         }
     }
 
@@ -108,26 +108,23 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
             canvas.drawLine(startX, startY, endX, endY, paint)
         }
 
-        // --- Smooth Sweep Math ---
         val calendar = Calendar.getInstance()
         val hours = calendar.get(Calendar.HOUR)
         val minutes = calendar.get(Calendar.MINUTE)
         val seconds = calendar.get(Calendar.SECOND)
-        val millis = calendar.get(Calendar.MILLISECOND)
 
-        // Hour hand (moves slightly as minutes pass)
+        // Hour hand
         paint.strokeWidth = 12f
         drawHand(canvas, centerX, centerY, radius * 0.5f, ((hours + minutes / 60f) * 30).toDouble(), paint)
 
-        // Minute hand (moves slightly as seconds pass)
+        // Minute hand
         paint.strokeWidth = 8f
         drawHand(canvas, centerX, centerY, radius * 0.75f, ((minutes + seconds / 60f) * 6).toDouble(), paint)
 
-        // Second hand (smooth sweep using milliseconds)
+        // Second hand (standard 1-second ticks for battery efficiency)
         paint.color = Color.RED
         paint.strokeWidth = 4f
-        val smoothSeconds = seconds + (millis / 1000f)
-        drawHand(canvas, centerX, centerY, radius * 0.85f, (smoothSeconds * 6).toDouble(), paint)
+        drawHand(canvas, centerX, centerY, radius * 0.85f, (seconds * 6).toDouble(), paint)
 
         // Draw center dot
         paint.style = Paint.Style.FILL
