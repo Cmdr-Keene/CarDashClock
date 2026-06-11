@@ -25,7 +25,8 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
     private val updateRunnable = object : Runnable {
         override fun run() {
             render()
-            handler.postDelayed(this, 1000)
+            // Update at ~30 FPS (32ms) for a smooth "sweep" second hand
+            handler.postDelayed(this, 32)
         }
     }
 
@@ -36,11 +37,12 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
     }
 
     override fun onGetTemplate(): Template {
-        // Use NavigationTemplate which supports a background surface
+        // Use NavigationTemplate which supports a background surface.
+        // An ActionStrip with at least one action (e.g., BACK or APP_ICON) is required.
         return NavigationTemplate.Builder()
             .setActionStrip(
                 ActionStrip.Builder()
-                    .addAction(Action.APP_ICON)
+                    .addAction(Action.BACK)
                     .build()
             )
             .build()
@@ -62,7 +64,6 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
         val surface = container.surface ?: return
         if (!surface.isValid) return
 
-        // For Car App Library, it's recommended to use lockCanvas or lockHardwareCanvas
         val canvas: Canvas = surface.lockCanvas(null)
         try {
             drawClock(canvas)
@@ -78,11 +79,16 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
         val centerY = height / 2
         val radius = Math.min(width, height) / 2 * 0.8f
 
-        // Clear background with a dark color
-        canvas.drawColor(Color.parseColor("#121212"))
+        // --- Automatic Night Mode Logic ---
+        val isDarkMode = carContext.isDarkMode
+        val backgroundColor = if (isDarkMode) Color.parseColor("#121212") else Color.parseColor("#F5F5F5")
+        val foregroundColor = if (isDarkMode) Color.WHITE else Color.BLACK
+
+        // Clear background
+        canvas.drawColor(backgroundColor)
 
         val paint = Paint().apply {
-            color = Color.WHITE
+            color = foregroundColor
             isAntiAlias = true
             style = Paint.Style.STROKE
             strokeWidth = 8f
@@ -102,27 +108,30 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
             canvas.drawLine(startX, startY, endX, endY, paint)
         }
 
+        // --- Smooth Sweep Math ---
         val calendar = Calendar.getInstance()
         val hours = calendar.get(Calendar.HOUR)
         val minutes = calendar.get(Calendar.MINUTE)
         val seconds = calendar.get(Calendar.SECOND)
+        val millis = calendar.get(Calendar.MILLISECOND)
 
-        // Draw hour hand
+        // Hour hand (moves slightly as minutes pass)
         paint.strokeWidth = 12f
         drawHand(canvas, centerX, centerY, radius * 0.5f, ((hours + minutes / 60f) * 30).toDouble(), paint)
 
-        // Draw minute hand
+        // Minute hand (moves slightly as seconds pass)
         paint.strokeWidth = 8f
         drawHand(canvas, centerX, centerY, radius * 0.75f, ((minutes + seconds / 60f) * 6).toDouble(), paint)
 
-        // Draw second hand
+        // Second hand (smooth sweep using milliseconds)
         paint.color = Color.RED
         paint.strokeWidth = 4f
-        drawHand(canvas, centerX, centerY, radius * 0.85f, (seconds * 6).toDouble(), paint)
+        val smoothSeconds = seconds + (millis / 1000f)
+        drawHand(canvas, centerX, centerY, radius * 0.85f, (smoothSeconds * 6).toDouble(), paint)
 
         // Draw center dot
         paint.style = Paint.Style.FILL
-        paint.color = Color.WHITE
+        paint.color = foregroundColor
         canvas.drawCircle(centerX, centerY, 10f, paint)
     }
 
