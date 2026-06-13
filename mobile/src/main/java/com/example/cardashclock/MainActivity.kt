@@ -1,4 +1,4 @@
-package com.example.cardashclock
+package com.cmdrkeene.dashclockforandroidauto
 
 import android.Manifest
 import android.content.pm.PackageManager

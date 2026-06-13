@@ -1,2 +1,0 @@
-com.example.cardashclock.shared
-xml automotive_app_desc
