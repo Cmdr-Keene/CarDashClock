@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Dash Clock</string>
+    <string name="title_settings">Dash Clock Settings</string>
+    <string name="title_clock_customization">Clock Customization</string>
+    <string name="title_background">Background</string>
+    <string name="btn_choose_face_color">Choose Face Color</string>
+    <string name="btn_choose_hand_color">Choose Hour/Min Hand Color</string>
+    <string name="btn_choose_second_hand_color">Choose Second Hand Color</string>
+    <string name="btn_choose_background_image">Choose Background Image</string>
+    <string name="btn_choose_overlay_color">Choose Image Overlay Tint</string>
+    <string name="content_description_clear_image">Clear Background Image</string>
+    <string name="btn_choose_background_color">Choose Background Color</string>
+    <string name="label_glow_effect">Enable Glow Effect</string>
+    <string name="btn_restore_default_colors">Restore Default Colors</string>
+    <string name="status_auto_update">Changes will appear automatically on your car display.</string>
+
+    <string name="tab_day">Day Mode</string>
+    <string name="tab_night">Night Mode</string>
 </resources>

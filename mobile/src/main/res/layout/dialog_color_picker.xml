@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <View
+        android:id="@+id/color_preview"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginBottom="24dp"
+        android:background="#FF0000" />
+
+    <TextView
+        android:id="@+id/label_alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Opacity"
+        android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+    <FrameLayout
+        android:id="@+id/container_alpha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <View
+            android:id="@+id/alpha_gradient"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
+
+        <SeekBar
+            android:id="@+id/alpha_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="255"
+            android:progress="255"
+            android:splitTrack="false"
+            android:background="@null"
+            android:progressDrawable="@android:color/transparent" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hue"
+        android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <View
+            android:id="@+id/hue_gradient"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
+
+        <SeekBar
+            android:id="@+id/hue_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="360"
+            android:progress="0"
+            android:splitTrack="false"
+            android:background="@null"
+            android:progressDrawable="@android:color/transparent" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Saturation"
+        android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <View
+            android:id="@+id/sat_gradient"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
+
+        <SeekBar
+            android:id="@+id/saturation_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="100"
+            android:splitTrack="false"
+            android:background="@null"
+            android:progressDrawable="@android:color/transparent" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Value (Brightness)"
+        android:textAppearance="?attr/textAppearanceLabelLarge" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/val_gradient"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
+
+        <SeekBar
+            android:id="@+id/value_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="100"
+            android:splitTrack="false"
+            android:background="@null"
+            android:progressDrawable="@android:color/transparent" />
+    </FrameLayout>
+
+</LinearLayout>
