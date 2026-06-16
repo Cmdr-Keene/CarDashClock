@@ -3,11 +3,11 @@ plugins {
 }
 android {
     namespace 'com.cmdrkeene.cardashclock.shared'
-    compileSdk 36
+    compileSdk 35
 
     defaultConfig {
-        minSdk 35
-        targetSdk 36
+        minSdk 26
+        targetSdk 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

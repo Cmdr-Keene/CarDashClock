@@ -4,18 +4,14 @@ plugins {
 
 android {
     namespace = "com.cmdrkeene.dashclockforandroidauto"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.cmdrkeene.dashclockforandroidauto"
-        minSdk = 35
-        targetSdk = 36
-        versionCode = 3
-        versionName = "1.1"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 4
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
