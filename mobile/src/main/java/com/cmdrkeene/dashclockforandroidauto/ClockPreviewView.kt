@@ -23,12 +23,45 @@ class ClockPreviewView @JvmOverloads constructor(
     var isDarkMode: Boolean = false
     var isGlowEnabled: Boolean = false
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val hourHandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 10f
+    }
+    private val minuteHandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 7f
+    }
+    private val secondHandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 3f
+    }
+    private val facePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 6f
+    }
+    private val markerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+    }
+    
+    private val calendar = Calendar.getInstance()
+
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
-            invalidate()
-            handler.postDelayed(this, 1000)
+            if (isShown) {
+                invalidate()
+            }
+            // Align with the start of the next second
+            val currentTime = System.currentTimeMillis()
+            val delay = 1000 - (currentTime % 1000)
+            handler.postDelayed(this, delay)
         }
     }
 
@@ -45,10 +78,6 @@ class ClockPreviewView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         
-        // Ensure hardware acceleration is off for shadow layer if needed, 
-        // but for a simple glow on modern devices it usually works fine.
-        // setLayerType(LAYER_TYPE_SOFTWARE, null) 
-
         val width = width.toFloat()
         val height = height.toFloat()
         val centerX = width / 2
@@ -69,54 +98,48 @@ class ClockPreviewView @JvmOverloads constructor(
             }
         } ?: canvas.drawColor(clockBackgroundColor)
 
-        // Reset shadow layer for markers
-        paint.clearShadowLayer()
-
         // Draw face
-        paint.color = faceColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 6f
-        if (isGlowEnabled) paint.setShadowLayer(15f, 0f, 0f, faceColor)
-        canvas.drawCircle(centerX, centerY, radius, paint)
+        facePaint.color = faceColor
+        if (isGlowEnabled) facePaint.setShadowLayer(15f, 0f, 0f, faceColor) else facePaint.clearShadowLayer()
+        canvas.drawCircle(centerX, centerY, radius, facePaint)
 
         // Draw hour markings
-        paint.strokeWidth = 3f
+        markerPaint.color = faceColor
+        markerPaint.clearShadowLayer()
         for (i in 0 until 12) {
             val angle = Math.toRadians((i * 30).toDouble())
             val startX = centerX + (radius * 0.88f * sin(angle)).toFloat()
             val startY = centerY - (radius * 0.88f * cos(angle)).toFloat()
             val endX = centerX + (radius * 0.95f * sin(angle)).toFloat()
             val endY = centerY - (radius * 0.95f * cos(angle)).toFloat()
-            canvas.drawLine(startX, startY, endX, endY, paint)
+            canvas.drawLine(startX, startY, endX, endY, markerPaint)
         }
 
         // Get current time for live animation
-        val calendar = Calendar.getInstance()
+        calendar.setTimeInMillis(System.currentTimeMillis())
         val hours = calendar.get(Calendar.HOUR)
         val minutes = calendar.get(Calendar.MINUTE)
         val seconds = calendar.get(Calendar.SECOND)
 
         // Hour hand
-        paint.color = handColor
-        paint.strokeWidth = 10f
-        if (isGlowEnabled) paint.setShadowLayer(8f, 0f, 0f, handColor)
-        drawHand(canvas, centerX, centerY, radius * 0.5f, ((hours + minutes / 60f) * 30).toDouble(), paint)
+        hourHandPaint.color = handColor
+        if (isGlowEnabled) hourHandPaint.setShadowLayer(8f, 0f, 0f, handColor) else hourHandPaint.clearShadowLayer()
+        drawHand(canvas, centerX, centerY, radius * 0.5f, ((hours + minutes / 60f) * 30).toDouble(), hourHandPaint)
 
         // Minute hand
-        paint.strokeWidth = 7f
-        drawHand(canvas, centerX, centerY, radius * 0.75f, ((minutes + seconds / 60f) * 6).toDouble(), paint)
+        minuteHandPaint.color = handColor
+        if (isGlowEnabled) minuteHandPaint.setShadowLayer(8f, 0f, 0f, handColor) else minuteHandPaint.clearShadowLayer()
+        drawHand(canvas, centerX, centerY, radius * 0.75f, ((minutes + seconds / 60f) * 6).toDouble(), minuteHandPaint)
 
         // Second hand
-        paint.color = secondHandColor
-        paint.strokeWidth = 3f
-        if (isGlowEnabled) paint.setShadowLayer(15f, 0f, 0f, secondHandColor)
-        drawHand(canvas, centerX, centerY, radius * 0.85f, (seconds * 6).toDouble(), paint)
+        secondHandPaint.color = secondHandColor
+        if (isGlowEnabled) secondHandPaint.setShadowLayer(15f, 0f, 0f, secondHandColor) else secondHandPaint.clearShadowLayer()
+        drawHand(canvas, centerX, centerY, radius * 0.85f, (seconds * 6).toDouble(), secondHandPaint)
 
         // Center dot
-        paint.style = Paint.Style.FILL
-        paint.color = faceColor
-        if (isGlowEnabled) paint.setShadowLayer(5f, 0f, 0f, faceColor)
-        canvas.drawCircle(centerX, centerY, 8f, paint)
+        dotPaint.color = faceColor
+        if (isGlowEnabled) dotPaint.setShadowLayer(5f, 0f, 0f, faceColor) else dotPaint.clearShadowLayer()
+        canvas.drawCircle(centerX, centerY, 8f, dotPaint)
     }
 
     private fun drawHand(canvas: Canvas, cx: Float, cy: Float, length: Float, angleDegrees: Double, paint: Paint) {
