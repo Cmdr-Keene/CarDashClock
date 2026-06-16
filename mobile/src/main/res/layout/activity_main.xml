@@ -191,16 +191,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_reset"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="24dp"
-                android:text="@string/btn_restore_default_colors"
-                android:textColor="?attr/colorError" />
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -209,6 +199,17 @@
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:alpha="0.7"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_reset"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/btn_restore_default_colors"
+                android:textColor="?attr/colorError" />
 
         </LinearLayout>
 

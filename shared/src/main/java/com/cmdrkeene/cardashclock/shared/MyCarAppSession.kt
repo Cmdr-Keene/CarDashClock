@@ -1,4 +1,4 @@
-package com.example.cardashclock.shared
+package com.cmdrkeene.cardashclock.shared
 
 import android.content.Intent
 import androidx.car.app.Screen

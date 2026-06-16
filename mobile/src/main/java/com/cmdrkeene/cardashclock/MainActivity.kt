@@ -20,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.cardashclock.shared.SettingsManager
+import com.cmdrkeene.cardashclock.shared.SettingsManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -29,6 +29,8 @@ import com.google.android.material.tabs.TabLayout
 class MainActivity : AppCompatActivity() {
     private lateinit var settingsManager: SettingsManager
     private var isEditModeNight = false
+
+    enum class ClockPart { FACE, HANDS, SECOND_HAND, BG_COLOR, OVERLAY }
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -48,21 +50,21 @@ class MainActivity : AppCompatActivity() {
         setupTabs()
 
         findViewById<Button>(R.id.btn_pick_face_color).setOnClickListener {
-            showColorPicker("Choose Face Color", settingsManager.getFaceColor(isEditModeNight), showAlpha = false) { color ->
+            showColorPicker("Choose Face Color", settingsManager.getFaceColor(isEditModeNight), showAlpha = false, ClockPart.FACE) { color ->
                 settingsManager.setFaceColor(color, isEditModeNight)
                 updatePreviews()
             }
         }
 
         findViewById<Button>(R.id.btn_pick_hand_color).setOnClickListener {
-            showColorPicker("Choose Hour/Min Hand Color", settingsManager.getHandColor(isEditModeNight), showAlpha = false) { color ->
+            showColorPicker("Choose Hour/Min Hand Color", settingsManager.getHandColor(isEditModeNight), showAlpha = false, ClockPart.HANDS) { color ->
                 settingsManager.setHandColor(color, isEditModeNight)
                 updatePreviews()
             }
         }
 
         findViewById<Button>(R.id.btn_pick_second_hand_color).setOnClickListener {
-            showColorPicker("Choose Second Hand Color", settingsManager.getSecondHandColor(isEditModeNight), showAlpha = false) { color ->
+            showColorPicker("Choose Second Hand Color", settingsManager.getSecondHandColor(isEditModeNight), showAlpha = false, ClockPart.SECOND_HAND) { color ->
                 settingsManager.setSecondHandColor(color, isEditModeNight)
                 updatePreviews()
             }
@@ -78,14 +80,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_pick_overlay_color).setOnClickListener {
-            showColorPicker("Choose Image Overlay Tint", settingsManager.getOverlayColor(isEditModeNight), showAlpha = true) { color ->
+            showColorPicker("Choose Image Overlay Tint", settingsManager.getOverlayColor(isEditModeNight), showAlpha = true, ClockPart.OVERLAY) { color ->
                 settingsManager.setOverlayColor(color, isEditModeNight)
                 updatePreviews()
             }
         }
 
         findViewById<Button>(R.id.btn_pick_bg_color).setOnClickListener {
-            showColorPicker("Choose Background Color", settingsManager.getBackgroundColor(isEditModeNight), showAlpha = false) { color ->
+            showColorPicker("Choose Background Color", settingsManager.getBackgroundColor(isEditModeNight), showAlpha = false, ClockPart.BG_COLOR) { color ->
                 settingsManager.setBackgroundColor(color, isEditModeNight)
                 settingsManager.setBgImageUri(null, isEditModeNight)
                 updatePreviews()
@@ -192,9 +194,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showColorPicker(title: String, initialColor: Int, showAlpha: Boolean, onColorSelected: (Int) -> Unit) {
+    private fun showColorPicker(title: String, initialColor: Int, showAlpha: Boolean, part: ClockPart, onColorSelected: (Int) -> Unit) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_color_picker, null)
-        val preview = dialogView.findViewById<View>(R.id.color_preview)
+        val preview = dialogView.findViewById<ClockPreviewView>(R.id.color_preview)
         val alphaSeek = dialogView.findViewById<SeekBar>(R.id.alpha_seekbar)
         val hueSeek = dialogView.findViewById<SeekBar>(R.id.hue_seekbar)
         val satSeek = dialogView.findViewById<SeekBar>(R.id.saturation_seekbar)
@@ -205,6 +207,16 @@ class MainActivity : AppCompatActivity() {
         val hueGradientView = dialogView.findViewById<View>(R.id.hue_gradient)
         val satGradientView = dialogView.findViewById<View>(R.id.sat_gradient)
         val valGradientView = dialogView.findViewById<View>(R.id.val_gradient)
+
+        // Initialize preview with current settings
+        preview.isDarkMode = isEditModeNight
+        preview.isGlowEnabled = settingsManager.isGlowEnabled(isEditModeNight)
+        preview.faceColor = settingsManager.getFaceColor(isEditModeNight)
+        preview.handColor = settingsManager.getHandColor(isEditModeNight)
+        preview.secondHandColor = settingsManager.getSecondHandColor(isEditModeNight)
+        preview.clockBackgroundColor = settingsManager.getBackgroundColor(isEditModeNight)
+        preview.overlayColor = settingsManager.getOverlayColor(isEditModeNight)
+        preview.backgroundBitmap = loadBitmapFromUri(settingsManager.getBgImageUri(isEditModeNight))
 
         alphaContainer.visibility = if (showAlpha) View.VISIBLE else View.GONE
         dialogView.findViewById<View>(R.id.label_alpha).visibility = if (showAlpha) View.VISIBLE else View.GONE
@@ -227,9 +239,10 @@ class MainActivity : AppCompatActivity() {
                 val alphaColors = intArrayOf(Color.TRANSPARENT, currentColor)
                 alphaGradientView.background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, alphaColors).apply { cornerRadius = 8f }
             }
-            val satColors = intArrayOf(Color.HSVToColor(floatArrayOf(hsv[0], 0f, hsv[2])), Color.HSVToColor(floatArrayOf(hsv[0], 1f, hsv[2])))
+            // Both sliders now have independent background gradients for better visibility
+            val satColors = intArrayOf(Color.HSVToColor(floatArrayOf(hsv[0], 0f, 1f)), Color.HSVToColor(floatArrayOf(hsv[0], 1f, 1f)))
             satGradientView.background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, satColors).apply { cornerRadius = 8f }
-            val valColors = intArrayOf(Color.HSVToColor(floatArrayOf(hsv[0], hsv[1], 0f)), Color.HSVToColor(floatArrayOf(hsv[0], hsv[1], 1f)))
+            val valColors = intArrayOf(Color.HSVToColor(floatArrayOf(hsv[0], 1f, 0f)), Color.HSVToColor(floatArrayOf(hsv[0], 1f, 1f)))
             valGradientView.background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, valColors).apply { cornerRadius = 8f }
         }
 
@@ -238,7 +251,20 @@ class MainActivity : AppCompatActivity() {
             hsv[1] = satSeek.progress / 100f
             hsv[2] = valSeek.progress / 100f
             val alpha = if (showAlpha) alphaSeek.progress else 255
-            preview.setBackgroundColor(Color.HSVToColor(alpha, hsv))
+            val color = Color.HSVToColor(alpha, hsv)
+            
+            // Update the live preview based on what we are editing
+            when (part) {
+                ClockPart.FACE -> preview.faceColor = color
+                ClockPart.HANDS -> preview.handColor = color
+                ClockPart.SECOND_HAND -> preview.secondHandColor = color
+                ClockPart.BG_COLOR -> {
+                    preview.clockBackgroundColor = color
+                    preview.backgroundBitmap = null // Clear bitmap if picking color
+                }
+                ClockPart.OVERLAY -> preview.overlayColor = color
+            }
+            preview.invalidate()
             updateGradients()
         }
 

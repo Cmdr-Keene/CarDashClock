@@ -1,4 +1,4 @@
-package com.example.cardashclock
+package com.cmdrkeene.cardashclock
 
 import org.junit.Test
 

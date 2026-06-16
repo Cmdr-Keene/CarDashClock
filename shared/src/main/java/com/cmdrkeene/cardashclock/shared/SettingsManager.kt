@@ -1,4 +1,4 @@
-package com.example.cardashclock.shared
+package com.cmdrkeene.cardashclock.shared
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,6 +6,14 @@ import android.graphics.Color
 
 class SettingsManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("car_dash_clock_prefs", Context.MODE_PRIVATE)
+
+    fun registerListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun unregisterListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        prefs.unregisterOnSharedPreferenceChangeListener(listener)
+    }
 
     companion object {
         const val KEY_FACE_COLOR_DAY = "face_color_day"

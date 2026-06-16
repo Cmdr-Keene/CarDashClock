@@ -1,4 +1,4 @@
-package com.example.cardashclock.shared
+package com.cmdrkeene.cardashclock.shared
 
 import android.graphics.Rect
 import android.graphics.Bitmap
@@ -24,6 +24,7 @@ import androidx.core.graphics.drawable.IconCompat
 import android.os.PowerManager
 import android.os.SystemClock
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -43,6 +44,11 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
     private var staticBitmap: Bitmap? = null
     private var isStaticDirty = true
     private var stableArea: Rect? = null
+
+    private val prefsChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+        updateSettingsCache()
+        render()
+    }
 
     // Cache settings to avoid repeated SharedPreferences access in the render loop
     private var faceColor: Int = 0
@@ -141,6 +147,14 @@ class MyCarAppScreen(carContext: CarContext) : Screen(carContext), SurfaceCallba
         
         // Add lifecycle observer
         lifecycle.addObserver(this)
+    }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        settingsManager.registerListener(prefsChangeListener)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        settingsManager.unregisterListener(prefsChangeListener)
     }
     
     private fun getSin(degrees: Double): Float {

@@ -5,12 +5,11 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <View
+    <com.cmdrkeene.dashclockforandroidauto.ClockPreviewView
         android:id="@+id/color_preview"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginBottom="24dp"
-        android:background="#FF0000" />
+        android:layout_height="180dp"
+        android:layout_marginBottom="24dp" />
 
     <TextView
         android:id="@+id/label_alpha"
@@ -107,7 +106,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Value (Brightness)"
+        android:text="Brightness"
         android:textAppearance="?attr/textAppearanceLabelLarge" />
 
     <FrameLayout

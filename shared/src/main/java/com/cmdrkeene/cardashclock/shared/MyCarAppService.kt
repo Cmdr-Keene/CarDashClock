@@ -1,4 +1,4 @@
-package com.example.cardashclock.shared
+package com.cmdrkeene.cardashclock.shared
 
 import androidx.car.app.CarAppService
 import androidx.car.app.Session

@@ -2,7 +2,7 @@ plugins {
     id 'com.android.library'
 }
 android {
-    namespace 'com.example.cardashclock.shared'
+    namespace 'com.cmdrkeene.cardashclock.shared'
     compileSdk 36
 
     defaultConfig {
